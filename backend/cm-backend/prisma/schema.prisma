@@ -1,0 +1,55 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  phone     String   @unique // The universal identifier for the user
+  name      String
+  createdAt DateTime @default(now())
+  
+  requests  ConsentRequest[]
+  artefacts ConsentArtefact[]
+}
+
+model Fiduciary {
+  id          String   @id @default(uuid())
+  name        String
+  apiKey      String   @unique
+  callbackUrl String   // Callback URL to POST the Artefact and Revokes
+  createdAt   DateTime @default(now())
+  
+  requests    ConsentRequest[]
+  artefacts   ConsentArtefact[]
+}
+
+model ConsentRequest {
+  id           String   @id @default(uuid())
+  fiduciaryId  String
+  fiduciary    Fiduciary @relation(fields: [fiduciaryId], references: [id])
+  userId       String
+  user         User      @relation(fields: [userId], references: [id])
+  purposeText  String
+  dataItems    String    // E.g., '["Location", "Transaction History"]'
+  status       String    @default("PENDING") // PENDING, APPROVED, DENIED
+  createdAt    DateTime  @default(now())
+}
+
+model ConsentArtefact {
+  id           String    @id @default(uuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id])
+  fiduciaryId  String
+  fiduciary    Fiduciary @relation(fields: [fiduciaryId], references: [id])
+  purposeText  String
+  dataItems    String
+  signature    String    // Cryptographic proof
+  status       String    @default("ACTIVE") // ACTIVE, REVOKED
+  createdAt    DateTime  @default(now())
+  revokedAt    DateTime?
+}
