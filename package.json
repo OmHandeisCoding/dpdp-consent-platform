@@ -1,0 +1,23 @@
+{
+  "name": "dpdp-platform",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:cm-backend": "npm run dev --prefix backend/cm-backend",
+    "dev:fiduciary-backend": "npm run dev --prefix backend/fiduciary-backend",
+    "dev:dummy-bank": "npm run dev --prefix frontend/dummy-bank",
+    "dev:cmp-dashboard": "npm run dev --prefix frontend/cmp-dashboard",
+    "dev:cm-user-app": "npm run dev --prefix frontend/cm-user-app",
+    "dev": "concurrently \"npm run dev:cm-backend\" \"npm run dev:fiduciary-backend\" \"npm run dev:dummy-bank\" \"npm run dev:cmp-dashboard\" \"npm run dev:cm-user-app\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "npm-run-all": "^4.1.5"
+  }
+}
