@@ -1,0 +1,43 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model FiduciaryConfig {
+  id          String   @id @default(uuid())
+  companyName String   @default("Dummy Bank")
+  cmApiKey    String?  // API key to authenticate with the Central Consent Manager
+}
+
+model Purpose {
+  id          String   @id @default(uuid())
+  name        String   // e.g. "Transaction Processing"
+  description String
+  dataItems   String   // e.g. '["Location", "Transaction History"]'
+  createdAt   DateTime @default(now())
+}
+
+model Customer {
+  id          String   @id @default(uuid())
+  name        String
+  phone       String   @unique // Same identifier used to align with the CM
+  bankBalance Float    @default(5000.0)
+  
+  consents    ConsentLog[]
+}
+
+model ConsentLog {
+  id           String   @id @default(uuid()) // This should match the ConsentArtefact ID from the CM
+  customerId   String
+  customer     Customer @relation(fields: [customerId], references: [id])
+  purposeText  String
+  dataItems    String
+  signature    String   // Copy of the signature for audit
+  status       String   @default("ACTIVE") // ACTIVE, REVOKED
+  createdAt    DateTime @default(now())
+  revokedAt    DateTime?
+}
